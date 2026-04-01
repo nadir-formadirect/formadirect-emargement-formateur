@@ -6,350 +6,52 @@
   <title>FORMADIRECT - Feuille d'Émargement Formateur</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    html, body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      color: #333;
-      background: #f5f5f5;
-    }
-    
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-    }
-    
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      border: 1px solid #e0e0e0;
-    }
-    
-    .header-logo {
-      display: inline-block;
-      font-weight: 600;
-      font-size: 14px;
-      color: #1a3a52;
-      margin-bottom: 0.5rem;
-      background: #f0f4f8;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-    }
-    
-    .header h1 {
-      font-size: 24px;
-      font-weight: 600;
-      margin: 0.5rem 0;
-      color: #1a3a52;
-    }
-    
-    .header p {
-      font-size: 14px;
-      color: #666;
-      margin: 0;
-    }
-    
-    .badge {
-      display: inline-block;
-      background: #1a3a52;
-      color: white;
-      padding: 0.4rem 0.8rem;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-top: 0.5rem;
-    }
-    
-    .info-box {
-      background: #f0f4f8;
-      border-left: 4px solid #f0743d;
-      padding: 1rem;
-      border-radius: 4px;
-      font-size: 13px;
-      color: #555;
-      margin-bottom: 1.5rem;
-    }
-    
-    .form-section {
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .form-section h2 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: #1a3a52;
-      border-bottom: 2px solid #f0743d;
-      padding-bottom: 0.75rem;
-    }
-    
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    
-    .form-grid.full {
-      grid-template-columns: 1fr;
-    }
-    
-    .form-group {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .form-group label {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #555;
-    }
-    
-    .form-group input,
-    .form-group select {
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-    
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #f0743d;
-      background: #fff9f6;
-      box-shadow: 0 0 0 2px rgba(240, 116, 61, 0.1);
-    }
-    
-    .signature-container {
-      background: #fafafa;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    
-    .signature-label {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      color: #555;
-      display: block;
-    }
-    
-    .canvas-wrapper {
-      position: relative;
-      display: block;
-      width: 100%;
-      margin-bottom: 0.75rem;
-    }
-    
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      border: 2px dashed #ddd;
-      border-radius: 4px;
-      cursor: crosshair;
-      background: white;
-      touch-action: none;
-      max-width: 100%;
-    }
-    
-    .btn-group {
-      display: flex;
-      gap: 0.75rem;
-    }
-    
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 13px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background: white;
-      color: #333;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-weight: 500;
-      font-family: inherit;
-    }
-    
-    button:hover {
-      background: #f5f5f5;
-      border-color: #999;
-    }
-    
-    button:active {
-      transform: scale(0.98);
-    }
-    
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
-    .btn-small {
-      padding: 0.4rem 0.8rem;
-      font-size: 12px;
-    }
-    
-    .btn-primary {
-      background: #1a3a52;
-      color: white;
-      border-color: #1a3a52;
-    }
-    
-    .btn-primary:hover:not(:disabled) {
-      background: #2c4f6d;
-      border-color: #2c4f6d;
-    }
-    
-    .btn-secondary {
-      background: #f0743d;
-      color: white;
-      border-color: #f0743d;
-    }
-    
-    .btn-secondary:hover:not(:disabled) {
-      background: #d85a2c;
-      border-color: #d85a2c;
-    }
-    
-    .button-row {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.5rem;
-      margin-bottom: 3rem;
-    }
-    
-    .button-row button {
-      flex: 1;
-      padding: 0.8rem 1.5rem;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    
-    .success-message {
-      display: none;
-      background: #e8f5e9;
-      border-left: 4px solid #4caf50;
-      padding: 1rem;
-      border-radius: 4px;
-      margin-bottom: 1.5rem;
-      color: #2e7d32;
-      font-size: 14px;
-    }
-    
-    .success-message.show {
-      display: block;
-    }
-    
-    .code-box {
-      background: #1a3a52;
-      color: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      text-align: center;
-      margin: 1.5rem 0;
-    }
-    
-    .code-box h3 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      opacity: 0.9;
-    }
-    
-    .code-display {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      font-family: 'Courier New', monospace;
-      margin-bottom: 1rem;
-      background: rgba(255,255,255,0.1);
-      padding: 1rem;
-      border-radius: 4px;
-      word-break: break-all;
-    }
-    
-    .code-instructions {
-      font-size: 12px;
-      opacity: 0.9;
-      line-height: 1.6;
-    }
-    
-    .copy-btn {
-      background: white;
-      color: #1a3a52;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      margin-top: 1rem;
-      border-radius: 4px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    
-    .copy-btn:hover {
-      background: #f0f0f0;
-    }
-    
-    .waiting-box {
-      background: #fff3cd;
-      border-left: 4px solid #ffc107;
-      padding: 1rem;
-      border-radius: 4px;
-      margin: 1.5rem 0;
-      color: #856404;
-      text-align: center;
-      display: none;
-    }
-    
-    .waiting-box.show {
-      display: block;
-    }
-    
-    .signature-received {
-      background: #d4edda;
-      border: 1px solid #c3e6cb;
-      border-radius: 4px;
-      padding: 1rem;
-      margin: 1rem 0;
-      color: #155724;
-      display: none;
-    }
-    
-    .signature-received.show {
-      display: block;
-    }
-    
-    @media (max-width: 768px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .button-row {
-        flex-direction: column;
-      }
-      
-      .container {
-        padding: 1rem 0.5rem;
-      }
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #333; background: #f5f5f5; }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    .header { text-align: center; margin-bottom: 2rem; background: white; padding: 2rem; border-radius: 8px; border: 1px solid #e0e0e0; }
+    .header-logo { display: inline-block; font-weight: 600; font-size: 14px; color: #1a3a52; margin-bottom: 0.5rem; background: #f0f4f8; padding: 0.5rem 1rem; border-radius: 4px; }
+    .header h1 { font-size: 24px; font-weight: 600; margin: 0.5rem 0; color: #1a3a52; }
+    .header p { font-size: 14px; color: #666; margin: 0; }
+    .badge { display: inline-block; background: #1a3a52; color: white; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 12px; font-weight: 600; margin-top: 0.5rem; }
+    .info-box { background: #f0f4f8; border-left: 4px solid #f0743d; padding: 1rem; border-radius: 4px; font-size: 13px; color: #555; margin-bottom: 1.5rem; }
+    .form-section { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .form-section h2 { font-size: 16px; font-weight: 600; margin-bottom: 1rem; color: #1a3a52; border-bottom: 2px solid #f0743d; padding-bottom: 0.75rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-grid.full { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-size: 13px; font-weight: 600; margin-bottom: 0.5rem; color: #555; }
+    .form-group input, .form-group select { padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; font-family: inherit; transition: all 0.2s; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #f0743d; background: #fff9f6; box-shadow: 0 0 0 2px rgba(240, 116, 61, 0.1); }
+    .signature-container { background: #fafafa; border: 1px solid #ddd; border-radius: 4px; padding: 1rem; margin-bottom: 1rem; }
+    .signature-label { font-size: 13px; font-weight: 600; margin-bottom: 0.75rem; color: #555; display: block; }
+    .canvas-wrapper { position: relative; display: block; width: 100%; margin-bottom: 0.75rem; }
+    canvas { display: block; width: 100%; height: auto; border: 2px dashed #ddd; border-radius: 4px; cursor: crosshair; background: white; touch-action: none; max-width: 100%; }
+    .btn-group { display: flex; gap: 0.75rem; }
+    button { padding: 0.5rem 1rem; font-size: 13px; border: 1px solid #ddd; border-radius: 4px; background: white; color: #333; cursor: pointer; transition: all 0.2s; font-weight: 500; font-family: inherit; }
+    button:hover { background: #f5f5f5; border-color: #999; }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-small { padding: 0.4rem 0.8rem; font-size: 12px; }
+    .btn-primary { background: #1a3a52; color: white; border-color: #1a3a52; }
+    .btn-primary:hover:not(:disabled) { background: #2c4f6d; border-color: #2c4f6d; }
+    .btn-secondary { background: #f0743d; color: white; border-color: #f0743d; }
+    .btn-secondary:hover:not(:disabled) { background: #d85a2c; border-color: #d85a2c; }
+    .button-row { display: flex; gap: 1rem; margin-top: 1.5rem; margin-bottom: 3rem; }
+    .button-row button { flex: 1; padding: 0.8rem 1.5rem; font-size: 14px; font-weight: 600; }
+    .success-message { display: none; background: #e8f5e9; border-left: 4px solid #4caf50; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; color: #2e7d32; font-size: 14px; }
+    .success-message.show { display: block; }
+    .code-box { background: #1a3a52; color: white; padding: 1.5rem; border-radius: 8px; text-align: center; margin: 1.5rem 0; }
+    .code-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 1rem; opacity: 0.9; }
+    .code-display { font-size: 24px; font-weight: 700; letter-spacing: 2px; font-family: 'Courier New', monospace; margin-bottom: 1rem; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 4px; word-break: break-all; }
+    .code-instructions { font-size: 12px; opacity: 0.9; line-height: 1.6; }
+    .copy-btn { background: white; color: #1a3a52; border: none; padding: 0.6rem 1.2rem; margin-top: 1rem; border-radius: 4px; font-weight: 600; cursor: pointer; }
+    .copy-btn:hover { background: #f0f0f0; }
+    .waiting-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; border-radius: 4px; margin: 1.5rem 0; color: #856404; text-align: center; display: none; }
+    .waiting-box.show { display: block; }
+    .signature-received { background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; padding: 1rem; margin: 1rem 0; color: #155724; display: none; }
+    .signature-received.show { display: block; }
+    @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .button-row { flex-direction: column; } .container { padding: 1rem 0.5rem; } }
   </style>
 </head>
 <body>
@@ -363,17 +65,16 @@
   </div>
 
   <div class="info-box">
-    ℹ️ <strong>Formateur</strong> : Remplissez les infos, signez. Un code sera généré pour l'apprenant. Vous recevrez sa signature et générerez le PDF final.
+    ℹ️ <strong>Formateur</strong> : Remplissez tous les infos de la formation, signez. Un code sera généré pour le stagiaire.
   </div>
 
   <div id="successMessage" class="success-message">
-    ✅ Session créée ! Un code a été généré pour l'apprenant.
+    ✅ Session créée ! Un code a été généré pour le stagiaire.
   </div>
 
-  <!-- FORMULAIRE -->
   <div id="formSection">
     <div class="form-section">
-      <h2>📝 Apprenant</h2>
+      <h2>📝 Stagiaire</h2>
       <div class="form-grid">
         <div class="form-group">
           <label for="prenom">Prénom *</label>
@@ -434,7 +135,6 @@
 
     <div class="form-section">
       <h2>✍️ Votre Signature</h2>
-      
       <div>
         <div class="form-group" style="margin-bottom: 1rem;">
           <label for="dateSignFormateur">Date signature (JJ/MM/AAAA) *</label>
@@ -452,379 +152,10 @@
       </div>
     </div>
 
-    <!-- BOUTONS -->
     <div class="button-row">
       <button class="btn-primary" onclick="genererSession()">✅ Créer Session & Code</button>
       <button class="btn-secondary" onclick="reinitialiser()">🔄 Réinitialiser</button>
     </div>
   </div>
 
-  <!-- CODE BOX (caché au départ) -->
-  <div id="codeBox" class="code-box" style="display: none;">
-    <h3>🔐 CODE DE SESSION GÉNÉRÉ</h3>
-    <div class="code-display" id="codeDisplay">FD-XXXXXXXXXXXX</div>
-    <div class="code-instructions">
-      📋 Envoyez ce code à l'apprenant avec le lien :<br>
-      <strong>https://nadir-formadirect.github.io/formadirect-emargement-apprenant/</strong><br><br>
-      L'apprenant rentrera le code, signera et enverra sa signature.
-    </div>
-    <button class="copy-btn" onclick="copierCode()">📋 Copier le code</button>
-  </div>
-
-  <!-- WAITING BOX -->
-  <div id="waitingBox" class="waiting-box">
-    ⏳ En attente de la signature de l'apprenant...
-  </div>
-
-  <!-- SIGNATURE RECEIVED -->
-  <div id="signatureReceived" class="signature-received">
-    ✅ Signature apprenant reçue ! Vous pouvez maintenant générer le PDF final.
-  </div>
-
-  <!-- GENERATE PDF BUTTON (caché au départ) -->
-  <div class="form-section" id="generateSection" style="display: none;">
-    <h2>📄 Générer le PDF Final</h2>
-    <p style="margin-bottom: 1rem; color: #666;">Les deux signatures (apprenant + formateur) sont prêtes. Cliquez pour générer le PDF complet.</p>
-    <button class="btn-primary" style="width: 100%; padding: 1rem;" onclick="genererPDFFinal()">📥 Générer PDF Complet</button>
-  </div>
-</div>
-
-<script>
-let currentCode = null;
-let currentSession = null;
-
-function initCanvas() {
-  const canvas = document.getElementById('canvasFormateur');
-  const ctx = canvas.getContext('2d');
-  const wrapper = canvas.parentElement;
-  
-  function resizeCanvas() {
-    const rect = wrapper.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    
-    canvas.width = rect.width * dpr;
-    canvas.height = 150 * dpr;
-    
-    ctx.scale(dpr, dpr);
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#000000';
-  }
-  
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
-  
-  let isDrawing = false;
-  let lastX = 0, lastY = 0;
-  
-  function getCoords(e) {
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
-    return { x, y };
-  }
-  
-  function start(e) {
-    isDrawing = true;
-    const { x, y } = getCoords(e);
-    lastX = x;
-    lastY = y;
-    e.preventDefault();
-  }
-  
-  function draw(e) {
-    if (!isDrawing) return;
-    const { x, y } = getCoords(e);
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    lastX = x;
-    lastY = y;
-    e.preventDefault();
-  }
-  
-  function end() {
-    isDrawing = false;
-  }
-  
-  canvas.addEventListener('mousedown', start);
-  canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('mouseup', end);
-  canvas.addEventListener('mouseout', end);
-  canvas.addEventListener('touchstart', start, false);
-  canvas.addEventListener('touchmove', draw, false);
-  canvas.addEventListener('touchend', end, false);
-}
-
-initCanvas();
-
-setInterval(function() {
-  if (currentCode) {
-    const sessionData = localStorage.getItem('session_' + currentCode);
-    const signatureData = localStorage.getItem('signature_' + currentCode);
-    
-    if (signatureData && !document.getElementById('signatureReceived').classList.contains('show')) {
-      document.getElementById('waitingBox').classList.remove('show');
-      document.getElementById('signatureReceived').classList.add('show');
-      document.getElementById('generateSection').style.display = 'block';
-      currentSession = JSON.parse(sessionData);
-      currentSession.signatureApprenant = signatureData;
-    }
-  }
-}, 1000);
-
-function effacerSignature() {
-  const canvas = document.getElementById('canvasFormateur');
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function validerFormulaire() {
-  const champs = ['prenom', 'nom', 'formation', 'dateDebut', 'heureDebut', 'heureFin', 'nomFormateur', 'dateSignFormateur'];
-  
-  for (let champ of champs) {
-    if (!document.getElementById(champ).value.trim()) {
-      alert('❌ Le champ "' + champ + '" est obligatoire');
-      return false;
-    }
-  }
-  
-  const canvas = document.getElementById('canvasFormateur');
-  const ctx = canvas.getContext('2d');
-  const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  
-  let hasSignature = false;
-  for (let i = 3; i < img.data.length; i += 4) {
-    if (img.data[i] > 128) hasSignature = true;
-  }
-  
-  if (!hasSignature) {
-    alert('❌ Signature vide - dessinez votre signature');
-    return false;
-  }
-  
-  return true;
-}
-
-function genererCode() {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return 'FD-' + year + month + day + '-' + random;
-}
-
-function genererSession() {
-  if (!validerFormulaire()) return;
-  
-  const prenom = document.getElementById('prenom').value.trim();
-  const nom = document.getElementById('nom').value.trim();
-  const formation = document.getElementById('formation').value.trim();
-  const dateDebut = document.getElementById('dateDebut').value.trim();
-  const heureDebut = document.getElementById('heureDebut').value.trim();
-  const heureFin = document.getElementById('heureFin').value.trim();
-  const nomFormateur = document.getElementById('nomFormateur').value.trim();
-  const dateSignFormateur = document.getElementById('dateSignFormateur').value.trim();
-  
-  const code = genererCode();
-  currentCode = code;
-  
-  const sig = document.getElementById('canvasFormateur').toDataURL('image/png');
-  
-  const sessionData = {
-    code: code,
-    prenom: prenom,
-    nom: nom,
-    formation: formation,
-    dateDebut: dateDebut,
-    heureDebut: heureDebut,
-    heureFin: heureFin,
-    nomFormateur: nomFormateur,
-    dateSignFormateur: dateSignFormateur,
-    signatureFormateur: sig
-  };
-  
-  localStorage.setItem('session_' + code, JSON.stringify(sessionData));
-  currentSession = sessionData;
-  
-  document.getElementById('codeDisplay').textContent = code;
-  document.getElementById('codeBox').style.display = 'block';
-  document.getElementById('waitingBox').classList.add('show');
-  document.getElementById('formSection').style.display = 'none';
-  document.getElementById('successMessage').classList.add('show');
-  
-  setTimeout(() => {
-    document.getElementById('successMessage').classList.remove('show');
-  }, 5000);
-}
-
-function copierCode() {
-  const code = document.getElementById('codeDisplay').textContent;
-  navigator.clipboard.writeText(code).then(() => {
-    alert('✅ Code copié : ' + code);
-  });
-}
-
-function calculerDuree(debut, fin) {
-  const [hDebut, mDebut] = debut.split(':').map(Number);
-  const [hFin, mFin] = fin.split(':').map(Number);
-  const minutesDebut = hDebut * 60 + mDebut;
-  const minutesFin = hFin * 60 + mFin;
-  const diffMinutes = minutesFin - minutesDebut;
-  const heures = Math.floor(diffMinutes / 60);
-  const minutes = diffMinutes % 60;
-  
-  if (heures > 0 && minutes > 0) {
-    return heures + 'H' + minutes;
-  } else if (heures > 0) {
-    return heures + 'H';
-  } else {
-    return minutes + 'min';
-  }
-}
-
-function genererPDFFinal() {
-  if (!currentSession || !currentSession.signatureApprenant) {
-    alert('❌ Erreur : signature apprenant manquante');
-    return;
-  }
-  
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('p', 'mm', 'a4');
-  
-  let y = 15;
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.text('FORMADIRECT', 105, y, { align: 'center' });
-  y += 8;
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.text('SIRET: 904161 932 00028 | NDA: 84420372942', 105, y, { align: 'center' });
-  y += 4;
-  doc.text('65 rue Emmanuel Brun, 42100 Saint-Étienne', 105, y, { align: 'center' });
-  y += 4;
-  doc.text('Tél: 0636364928 | contact@formadirect.fr', 105, y, { align: 'center' });
-  
-  doc.setDrawColor(26, 58, 82);
-  doc.setLineWidth(1);
-  doc.line(20, y + 4, 190, y + 4);
-  y += 12;
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.text('FEUILLE D\'ÉMARGEMENT', 105, y, { align: 'center' });
-  y += 12;
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('APPRENANT', 20, y);
-  y += 8;
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.text('Prénom : ' + currentSession.prenom, 25, y);
-  y += 6;
-  doc.text('Nom : ' + currentSession.nom, 25, y);
-  y += 10;
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('FORMATION', 20, y);
-  y += 8;
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  const splitFormation = doc.splitTextToSize(currentSession.formation, 170);
-  doc.text(splitFormation, 25, y);
-  y += splitFormation.length * 5 + 5;
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('SESSION DE FORMATION', 20, y);
-  y += 8;
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.text('Date : ' + currentSession.dateDebut, 25, y);
-  y += 6;
-  doc.text('Horaire : ' + currentSession.heureDebut + ' - ' + currentSession.heureFin, 25, y);
-  y += 6;
-  const duree = calculerDuree(currentSession.heureDebut, currentSession.heureFin);
-  doc.text('Durée : ' + duree, 25, y);
-  y += 10;
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('FORMATEUR', 20, y);
-  y += 8;
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.text('Nom : ' + currentSession.nomFormateur, 25, y);
-  y += 12;
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('SIGNATURES', 20, y);
-  y += 10;
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.text('Apprenant', 35, y);
-  doc.text('Formateur', 135, y);
-  
-  doc.setFont('helvetica', 'normal');
-  doc.addImage(currentSession.signatureApprenant, 'PNG', 20, y + 3, 50, 25);
-  doc.addImage(currentSession.signatureFormateur, 'PNG', 120, y + 3, 50, 25);
-  y += 30;
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.text('Date : ---------', 20, y);
-  doc.text('Date : ' + currentSession.dateSignFormateur, 120, y);
-  
-  y = 280;
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.text('FORMADIRECT', 105, y, { align: 'center' });
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  y += 5;
-  doc.text('SIRET: 904161 932 00028 | NAF: 8559A | TVA: FR21904161932', 105, y, { align: 'center' });
-  y += 4;
-  doc.text('NDA: 84420372942 | Déclaré DREETS Auvergne-Rhône-Alpes', 105, y, { align: 'center' });
-  
-  doc.save(currentSession.prenom + '_' + currentSession.nom + '_emargement_FINAL.pdf');
-  
-  alert('✅ PDF généré : ' + currentSession.prenom + '_' + currentSession.nom + '_emargement_FINAL.pdf');
-}
-
-function reinitialiser() {
-  if (confirm('Réinitialiser tous les champs ?')) {
-    document.getElementById('prenom').value = '';
-    document.getElementById('nom').value = '';
-    document.getElementById('formation').value = '';
-    document.getElementById('dateDebut').value = '';
-    document.getElementById('heureDebut').value = '';
-    document.getElementById('heureFin').value = '';
-    document.getElementById('nomFormateur').value = '';
-    document.getElementById('dateSignFormateur').value = '';
-    effacerSignature();
-    document.getElementById('codeBox').style.display = 'none';
-    document.getElementById('waitingBox').classList.remove('show');
-    document.getElementById('signatureReceived').classList.remove('show');
-    document.getElementById('generateSection').style.display = 'none';
-    document.getElementById('formSection').style.display = 'block';
-    currentCode = null;
-  }
-}
-</script>
-
-</body>
-</html>
+  <di
