@@ -187,7 +187,6 @@
 <script>
 let currentCode = null;
 let currentSession = null;
-const logoBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADIAMgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=";
 
 function initCanvas() {
   const canvas = document.getElementById('canvasFormateur');
@@ -384,13 +383,23 @@ function genererPDFFinal() {
   
   let y = 10;
   
-  doc.addImage(logoBase64, 'JPEG', 15, 8, 40, 30);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.setTextColor(80, 80, 80);
-  doc.text('SIRET: 90416193200028 | NDA: 84420372942', 180, 18, { align: 'right' });
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(0, 82, 163);
+  doc.text('FORMADIRECT', 20, 15);
   
-  y = 48;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(80, 80, 80);
+  doc.text('SIRET: 90416193200028 | NDA: 84420372942', 180, 15, { align: 'right' });
+  
+  y = 28;
+  
+  doc.setLineWidth(0.5);
+  doc.setDrawColor(240, 116, 61);
+  doc.line(20, y, 190, y);
+  
+  y = 38;
   
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
@@ -400,22 +409,23 @@ function genererPDFFinal() {
   y += 14;
   
   doc.setFillColor(245, 245, 245);
-  doc.rect(20, y - 5, 170, 14, 'F');
+  doc.rect(20, y - 5, 170, 16, 'F');
   doc.setDrawColor(240, 116, 61);
   doc.setLineWidth(0.5);
-  doc.rect(20, y - 5, 170, 14);
+  doc.rect(20, y - 5, 170, 16);
   
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9);
   doc.setTextColor(0, 82, 163);
-  doc.text('Formation :', 25, y + 4);
+  doc.text('Formation :', 25, y + 5);
   
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
-  doc.setFontSize(7);
-  doc.text(currentSession.formation.substring(0, 60), 70, y + 4);
+  doc.setFontSize(6.5);
+  const lines = doc.splitTextToSize(currentSession.formation, 115);
+  doc.text(lines, 70, y + 3);
   
-  y += 18;
+  y += 22;
   
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
@@ -493,7 +503,7 @@ function genererPDFFinal() {
   doc.rect(0, 270, 210, 30, 'F');
   
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(9);
   doc.setTextColor(255, 255, 255);
   doc.text('FORMADIRECT', 105, 278, { align: 'center' });
   
