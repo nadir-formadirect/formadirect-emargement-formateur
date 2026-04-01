@@ -422,8 +422,8 @@ function genererPDFFinal() {
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
   doc.setFontSize(6.5);
-  const lines = doc.splitTextToSize(currentSession.formation, 115);
-  doc.text(lines, 70, y + 3);
+  const lines = doc.splitTextToSize(currentSession.formation, 125);
+  doc.text(lines, 55, y + 3);
   
   y += 22;
   
