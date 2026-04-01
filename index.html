@@ -41,7 +41,7 @@
     .button-row button { flex: 1; padding: 0.8rem 1.5rem; font-size: 14px; font-weight: 600; }
     .success-message { display: none; background: #e8f5e9; border-left: 4px solid #4caf50; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; color: #2e7d32; font-size: 14px; }
     .success-message.show { display: block; }
-    .code-box { background: #1a3a52; color: white; padding: 1.5rem; border-radius: 8px; text-align: center; margin: 1.5rem 0; }
+    .code-box { background: #1a3a52; color: white; padding: 1.5rem; border-radius: 8px; text-align: center; margin: 1.5rem 0; display: none; }
     .code-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 1rem; opacity: 0.9; }
     .code-display { font-size: 24px; font-weight: 700; letter-spacing: 2px; font-family: 'Courier New', monospace; margin-bottom: 1rem; background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 4px; word-break: break-all; }
     .code-instructions { font-size: 12px; opacity: 0.9; line-height: 1.6; }
@@ -158,4 +158,376 @@
     </div>
   </div>
 
-  <di
+  <div id="codeBox" class="code-box">
+    <h3>🔐 CODE DE SESSION GÉNÉRÉ</h3>
+    <div class="code-display" id="codeDisplay">FD-XXXXXXXXXXXX</div>
+    <div class="code-instructions">
+      📋 Envoyez ce code au stagiaire avec le lien :<br>
+      <strong>https://nadir-formadirect.github.io/formadirect-emargement-apprenant/</strong><br><br>
+      Le stagiaire rentrera le code, signera et enverra sa signature.
+    </div>
+    <button class="copy-btn" onclick="copierCode()">📋 Copier le code</button>
+  </div>
+
+  <div id="waitingBox" class="waiting-box">
+    ⏳ En attente de la signature du stagiaire...
+  </div>
+
+  <div id="signatureReceived" class="signature-received">
+    ✅ Signature stagiaire reçue ! Vous pouvez maintenant générer le PDF final.
+  </div>
+
+  <div class="form-section" id="generateSection" style="display: none;">
+    <h2>📄 Générer le PDF Final</h2>
+    <p style="margin-bottom: 1rem; color: #666;">Les deux signatures (stagiaire + formateur) sont prêtes. Cliquez pour générer le PDF complet.</p>
+    <button class="btn-primary" style="width: 100%; padding: 1rem;" onclick="genererPDFFinal()">📥 Générer PDF Complet</button>
+  </div>
+</div>
+
+<script>
+let currentCode = null;
+let currentSession = null;
+const logoBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADIAMgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=";
+
+function initCanvas() {
+  const canvas = document.getElementById('canvasFormateur');
+  const ctx = canvas.getContext('2d');
+  const wrapper = canvas.parentElement;
+  
+  function resizeCanvas() {
+    const rect = wrapper.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = 150 * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#000000';
+  }
+  
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  
+  let isDrawing = false;
+  let lastX = 0, lastY = 0;
+  
+  function getCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+    return { x, y };
+  }
+  
+  function start(e) {
+    isDrawing = true;
+    const { x, y } = getCoords(e);
+    lastX = x;
+    lastY = y;
+    e.preventDefault();
+  }
+  
+  function draw(e) {
+    if (!isDrawing) return;
+    const { x, y } = getCoords(e);
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    lastX = x;
+    lastY = y;
+    e.preventDefault();
+  }
+  
+  function end() {
+    isDrawing = false;
+  }
+  
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('mouseout', end);
+  canvas.addEventListener('touchstart', start, false);
+  canvas.addEventListener('touchmove', draw, false);
+  canvas.addEventListener('touchend', end, false);
+}
+
+initCanvas();
+setInterval(function() {
+  if (currentCode) {
+    const signatureData = localStorage.getItem('signature_' + currentCode);
+    if (signatureData && !document.getElementById('signatureReceived').classList.contains('show')) {
+      document.getElementById('waitingBox').classList.remove('show');
+      document.getElementById('signatureReceived').classList.add('show');
+      document.getElementById('generateSection').style.display = 'block';
+      const sessionData = localStorage.getItem('session_' + currentCode);
+      currentSession = JSON.parse(sessionData);
+      currentSession.signatureApprenant = signatureData;
+    }
+  }
+}, 1000);
+
+function effacerSignature() {
+  const canvas = document.getElementById('canvasFormateur');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function validerFormulaire() {
+  const champs = ['prenom', 'nom', 'formation', 'dateDebut', 'heureDebut', 'heureFin', 'nomFormateur', 'dateSignFormateur'];
+  for (let champ of champs) {
+    if (!document.getElementById(champ).value.trim()) {
+      alert('Le champ ' + champ + ' est obligatoire');
+      return false;
+    }
+  }
+  const canvas = document.getElementById('canvasFormateur');
+  const ctx = canvas.getContext('2d');
+  const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  let hasSignature = false;
+  for (let i = 3; i < img.data.length; i += 4) {
+    if (img.data[i] > 128) hasSignature = true;
+  }
+  if (!hasSignature) {
+    alert('Signature vide - dessinez votre signature');
+    return false;
+  }
+  return true;
+}
+
+function genererCode() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return 'FD-' + year + month + day + '-' + random;
+}
+
+function genererSession() {
+  if (!validerFormulaire()) return;
+  
+  const prenom = document.getElementById('prenom').value.trim();
+  const nom = document.getElementById('nom').value.trim();
+  const formation = document.getElementById('formation').value.trim();
+  const dateDebut = document.getElementById('dateDebut').value.trim();
+  const heureDebut = document.getElementById('heureDebut').value.trim();
+  const heureFin = document.getElementById('heureFin').value.trim();
+  const nomFormateur = document.getElementById('nomFormateur').value.trim();
+  const dateSignFormateur = document.getElementById('dateSignFormateur').value.trim();
+  
+  const code = genererCode();
+  currentCode = code;
+  const sig = document.getElementById('canvasFormateur').toDataURL('image/png');
+  
+  const sessionData = {
+    code: code,
+    prenom: prenom,
+    nom: nom,
+    formation: formation,
+    dateDebut: dateDebut,
+    heureDebut: heureDebut,
+    heureFin: heureFin,
+    nomFormateur: nomFormateur,
+    dateSignFormateur: dateSignFormateur,
+    signatureFormateur: sig
+  };
+  
+  localStorage.setItem('session_' + code, JSON.stringify(sessionData));
+  currentSession = sessionData;
+  
+  document.getElementById('codeDisplay').textContent = code;
+  document.getElementById('codeBox').style.display = 'block';
+  document.getElementById('waitingBox').classList.add('show');
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('successMessage').classList.add('show');
+  
+  setTimeout(() => {
+    document.getElementById('successMessage').classList.remove('show');
+  }, 5000);
+}
+
+function copierCode() {
+  const code = document.getElementById('codeDisplay').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    alert('Code copie : ' + code);
+  });
+}
+
+function calculerDuree(debut, fin) {
+  const [hDebut, mDebut] = debut.split(':').map(Number);
+  const [hFin, mFin] = fin.split(':').map(Number);
+  const minutesDebut = hDebut * 60 + mDebut;
+  const minutesFin = hFin * 60 + mFin;
+  const diffMinutes = minutesFin - minutesDebut;
+  const heures = Math.floor(diffMinutes / 60);
+  const minutes = diffMinutes % 60;
+  
+  if (heures > 0 && minutes > 0) {
+    return heures + 'H' + minutes;
+  } else if (heures > 0) {
+    return heures + 'H';
+  } else {
+    return minutes + 'min';
+  }
+}
+
+function genererPDFFinal() {
+  if (!currentSession || !currentSession.signatureApprenant) {
+    alert('Erreur : signature stagiaire manquante');
+    return;
+  }
+  
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p', 'mm', 'a4');
+  
+  let y = 10;
+  
+  doc.addImage(logoBase64, 'JPEG', 15, 8, 40, 30);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(80, 80, 80);
+  doc.text('SIRET: 90416193200028 | NDA: 84420372942', 180, 18, { align: 'right' });
+  
+  y = 48;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.setTextColor(0, 82, 163);
+  doc.text('FEUILLE D\'EMARGEMENT', 105, y, { align: 'center' });
+  
+  y += 12;
+  
+  doc.setFillColor(245, 245, 245);
+  doc.rect(20, y - 5, 170, 14, 'F');
+  doc.setDrawColor(240, 116, 61);
+  doc.setLineWidth(0.5);
+  doc.rect(20, y - 5, 170, 14);
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(0, 82, 163);
+  doc.text('Formation :', 25, y + 5);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(80, 80, 80);
+  doc.setFontSize(10);
+  doc.text(currentSession.formation, 70, y + 5);
+  
+  y += 20;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(0, 82, 163);
+  doc.text('STAGIAIRE', 20, y);
+  doc.text('FORMATEUR', 110, y);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(80, 80, 80);
+  y += 6;
+  doc.text('Prenom : ' + currentSession.prenom, 25, y);
+  doc.text('Prenom : Nadir', 115, y);
+  y += 5;
+  doc.text('Nom : ' + currentSession.nom, 25, y);
+  doc.text('Nom : ' + currentSession.nomFormateur, 115, y);
+  
+  y += 12;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(0, 82, 163);
+  doc.text('SESSION DE FORMATION', 20, y);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(80, 80, 80);
+  y += 6;
+  doc.text('Date : ' + currentSession.dateDebut, 25, y);
+  y += 5;
+  doc.text('Horaire : ' + currentSession.heureDebut + ' - ' + currentSession.heureFin, 25, y);
+  y += 5;
+  const duree = calculerDuree(currentSession.heureDebut, currentSession.heureFin);
+  doc.text('Duree : ' + duree, 25, y);
+  
+  y += 15;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(0, 82, 163);
+  doc.text('SIGNATURES', 20, y);
+  
+  y += 10;
+  
+  doc.setDrawColor(240, 116, 61);
+  doc.setLineWidth(1.5);
+  doc.rect(20, y, 80, 45);
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(0, 82, 163);
+  doc.text('Stagiaire', 30, y + 5);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.addImage(currentSession.signatureApprenant, 'PNG', 25, y + 8, 70, 20);
+  doc.setFontSize(8);
+  doc.setTextColor(80, 80, 80);
+  doc.text('Date : ---------', 25, y + 40);
+  
+  doc.setDrawColor(240, 116, 61);
+  doc.rect(110, y, 80, 45);
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(0, 82, 163);
+  doc.text('Formateur', 120, y + 5);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.addImage(currentSession.signatureFormateur, 'PNG', 115, y + 8, 70, 20);
+  doc.setFontSize(8);
+  doc.setTextColor(80, 80, 80);
+  doc.text('Date : ' + currentSession.dateSignFormateur, 115, y + 40);
+  
+  y += 55;
+  
+  doc.setFillColor(0, 82, 163);
+  doc.rect(0, 270, 210, 30, 'F');
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(255, 255, 255);
+  doc.text('FORMADIRECT', 105, 278, { align: 'center' });
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.text('65 rue Emmanuel Brun, 42100 Saint-Etienne', 105, 283, { align: 'center' });
+  doc.text('Tel: 0636364928 | contact@formadirect.fr', 105, 287, { align: 'center' });
+  
+  doc.save(currentSession.prenom + '_' + currentSession.nom + '_emargement_FINAL.pdf');
+  
+  alert('PDF genere : ' + currentSession.prenom + '_' + currentSession.nom + '_emargement_FINAL.pdf');
+}
+
+function reinitialiser() {
+  if (confirm('Reinitialiser tous les champs ?')) {
+    document.getElementById('prenom').value = '';
+    document.getElementById('nom').value = '';
+    document.getElementById('formation').value = '';
+    document.getElementById('dateDebut').value = '';
+    document.getElementById('heureDebut').value = '';
+    document.getElementById('heureFin').value = '';
+    document.getElementById('nomFormateur').value = '';
+    document.getElementById('dateSignFormateur').value = '';
+    effacerSignature();
+    document.getElementById('codeBox').style.display = 'none';
+    document.getElementById('waitingBox').classList.remove('show');
+    document.getElementById('signatureReceived').classList.remove('show');
+    document.getElementById('generateSection').style.display = 'none';
+    document.getElementById('formSection').style.display = 'block';
+    currentCode = null;
+  }
+}
+</script>
+
+</body>
+</html>
