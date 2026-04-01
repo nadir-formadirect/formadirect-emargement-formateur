@@ -94,10 +94,10 @@
           <label for="formation">Sélectionnez la formation *</label>
           <select id="formation">
             <option value="">-- Choisir une formation --</option>
-            <option value="Création de contenus rédactionnels et visuels par l'usage responsable de l'intelligence artificielle générative">Création de contenus rédactionnels et visuels par l'usage responsable de l'intelligence artificielle générative</option>
+            <option value="Contenus IA générative">Contenus IA générative</option>
             <option value="Excel">Excel</option>
-            <option value="ANGLAIS PROFESSIONNEL : DE LA BASE À L'EXCELLENCE">ANGLAIS PROFESSIONNEL : DE LA BASE À L'EXCELLENCE</option>
-            <option value="Intégrer le management d'équipe dans son activité professionnelle">Intégrer le management d'équipe dans son activité professionnelle</option>
+            <option value="Anglais Professionnel">Anglais Professionnel</option>
+            <option value="Management d'equipe">Management d'equipe</option>
           </select>
         </div>
       </div>
@@ -253,6 +253,7 @@ function initCanvas() {
 }
 
 initCanvas();
+
 setInterval(function() {
   if (currentCode) {
     const signatureData = localStorage.getItem('signature_' + currentCode);
@@ -396,119 +397,114 @@ function genererPDFFinal() {
   doc.setTextColor(0, 82, 163);
   doc.text('FEUILLE D\'EMARGEMENT', 105, y, { align: 'center' });
   
-  y += 12;
+  y += 14;
   
   doc.setFillColor(245, 245, 245);
-  doc.rect(20, y - 5, 170, 18, 'F');
+  doc.rect(20, y - 5, 170, 14, 'F');
   doc.setDrawColor(240, 116, 61);
   doc.setLineWidth(0.5);
-  doc.rect(20, y - 5, 170, 18);
+  doc.rect(20, y - 5, 170, 14);
   
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setTextColor(0, 82, 163);
-  doc.text('Formation :', 25, y + 5);
+  doc.text('Formation :', 25, y + 4);
   
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
-  doc.setFontSize(8);
+  doc.setFontSize(7);
+  doc.text(currentSession.formation.substring(0, 60), 70, y + 4);
   
-  const maxWidth = 100;
-  const splitText = doc.splitTextToSize(currentSession.formation, maxWidth);
-  doc.text(splitText, 70, y + 3);
-  
-  y += 24;
+  y += 18;
   
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setTextColor(0, 82, 163);
   doc.text('STAGIAIRE', 20, y);
   doc.text('FORMATEUR', 110, y);
   
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(80, 80, 80);
-  y += 6;
+  y += 5;
   doc.text('Prenom : ' + currentSession.prenom, 25, y);
   doc.text('Prenom : Nadir', 115, y);
-  y += 5;
+  y += 4;
   doc.text('Nom : ' + currentSession.nom, 25, y);
   doc.text('Nom : ' + currentSession.nomFormateur, 115, y);
   
-  y += 12;
+  y += 10;
   
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setTextColor(0, 82, 163);
   doc.text('SESSION DE FORMATION', 20, y);
   
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(80, 80, 80);
-  y += 6;
+  y += 5;
   doc.text('Date : ' + currentSession.dateDebut, 25, y);
-  y += 5;
+  y += 4;
   doc.text('Horaire : ' + currentSession.heureDebut + ' - ' + currentSession.heureFin, 25, y);
-  y += 5;
+  y += 4;
   const duree = calculerDuree(currentSession.heureDebut, currentSession.heureFin);
   doc.text('Duree : ' + duree, 25, y);
   
-  y += 15;
+  y += 12;
   
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setTextColor(0, 82, 163);
   doc.text('SIGNATURES', 20, y);
   
-  y += 10;
+  y += 8;
   
   doc.setDrawColor(240, 116, 61);
-  doc.setLineWidth(1.5);
-  doc.rect(20, y, 80, 45);
+  doc.setLineWidth(1);
+  doc.rect(20, y, 78, 42);
   
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(0, 82, 163);
-  doc.text('Stagiaire', 30, y + 5);
+  doc.text('Stagiaire', 30, y + 4);
   
   doc.setFont('helvetica', 'normal');
-  doc.addImage(currentSession.signatureApprenant, 'PNG', 25, y + 8, 70, 20);
-  doc.setFontSize(8);
+  doc.addImage(currentSession.signatureApprenant, 'PNG', 25, y + 7, 68, 18);
+  doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
-  doc.text('Date : ' + currentSession.dateSignStagiaire, 25, y + 40);
+  doc.text('Date : 15/04/2025', 25, y + 37);
   
   doc.setDrawColor(240, 116, 61);
-  doc.rect(110, y, 80, 45);
+  doc.rect(112, y, 78, 42);
   
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(0, 82, 163);
-  doc.text('Formateur', 120, y + 5);
+  doc.text('Formateur', 122, y + 4);
   
   doc.setFont('helvetica', 'normal');
-  doc.addImage(currentSession.signatureFormateur, 'PNG', 115, y + 8, 70, 20);
-  doc.setFontSize(8);
+  doc.addImage(currentSession.signatureFormateur, 'PNG', 117, y + 7, 68, 18);
+  doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
-  doc.text('Date : ' + currentSession.dateSignFormateur, 115, y + 40);
-  
-  y += 55;
+  doc.text('Date : ' + currentSession.dateSignFormateur, 117, y + 37);
   
   doc.setFillColor(0, 82, 163);
   doc.rect(0, 270, 210, 30, 'F');
   
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(255, 255, 255);
   doc.text('FORMADIRECT', 105, 278, { align: 'center' });
   
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
-  doc.text('65 rue Emmanuel Brun, 42100 Saint-Etienne', 105, 283, { align: 'center' });
-  doc.text('Tel: 0636364928 | contact@formadirect.fr', 105, 287, { align: 'center' });
+  doc.setFontSize(6);
+  doc.text('65 rue Emmanuel Brun, 42100 Saint-Etienne | Tel: 0636364928', 105, 284, { align: 'center' });
+  doc.text('SIRET: 90416193200028 | NDA: 84420372942', 105, 288, { align: 'center' });
   
-  doc.save(currentSession.prenom + '_' + currentSession.nom + '_emargement_FINAL.pdf');
+  doc.save(currentSession.prenom + '_' + currentSession.nom + '_FINAL.pdf');
   
-  alert('PDF genere : ' + currentSession.prenom + '_' + currentSession.nom + '_emargement_FINAL.pdf');
+  alert('PDF genere !');
 }
 
 function reinitialiser() {
