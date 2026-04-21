@@ -354,24 +354,6 @@ function copierCode() {
   });
 }
 
-function calculerDuree(debut, fin) {
-  const [hDebut, mDebut] = debut.split(':').map(Number);
-  const [hFin, mFin] = fin.split(':').map(Number);
-  const minutesDebut = hDebut * 60 + mDebut;
-  const minutesFin = hFin * 60 + mFin;
-  const diffMinutes = minutesFin - minutesDebut;
-  const heures = Math.floor(diffMinutes / 60);
-  const minutes = diffMinutes % 60;
-  
-  if (heures > 0 && minutes > 0) {
-    return heures + 'H' + minutes;
-  } else if (heures > 0) {
-    return heures + 'H';
-  } else {
-    return minutes + 'min';
-  }
-}
-
 function genererPDFFinal() {
   if (!currentSession || !currentSession.signatureApprenant) {
     alert('Erreur : signature stagiaire manquante');
@@ -438,10 +420,13 @@ function genererPDFFinal() {
   doc.setTextColor(80, 80, 80);
   y += 5;
   doc.text('Prenom : ' + currentSession.prenom, 25, y);
-  doc.text('Prenom : Nadir', 115, y);
+  const nomFormParts = currentSession.nomFormateur.split(' ');
+  const prenomForm = nomFormParts[0];
+  const nomForm = nomFormParts.length > 1 ? nomFormParts.slice(1).join(' ') : nomFormParts[0];
+  doc.text('Prenom : ' + prenomForm, 115, y);
   y += 4;
   doc.text('Nom : ' + currentSession.nom, 25, y);
-  doc.text('Nom : ' + currentSession.nomFormateur, 115, y);
+  doc.text('Nom : ' + nomForm, 115, y);
   
   y += 10;
   
@@ -458,7 +443,26 @@ function genererPDFFinal() {
   y += 4;
   doc.text('Horaire : ' + currentSession.heureDebut + ' - ' + currentSession.heureFin, 25, y);
   y += 4;
-  const duree = calculerDuree(currentSession.heureDebut, currentSession.heureFin);
+  
+  let duree = 'Erreur durée';
+  try {
+    const debut = currentSession.heureDebut.split(':');
+    const fin = currentSession.heureFin.split(':');
+    const minutesDebut = parseInt(debut[0]) * 60 + parseInt(debut[1]);
+    const minutesFin = parseInt(fin[0]) * 60 + parseInt(fin[1]);
+    const diffMinutes = minutesFin - minutesDebut;
+    const heures = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
+    if (heures > 0 && minutes > 0) {
+      duree = heures + 'H' + minutes;
+    } else if (heures > 0) {
+      duree = heures + 'H';
+    } else {
+      duree = minutes + 'min';
+    }
+  } catch(e) {
+    duree = '??';
+  }
   doc.text('Duree : ' + duree, 25, y);
   
   y += 12;
