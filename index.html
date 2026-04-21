@@ -354,6 +354,24 @@ function copierCode() {
   });
 }
 
+function calculerDuree(debut, fin) {
+  const [hDebut, mDebut] = debut.split(':').map(Number);
+  const [hFin, mFin] = fin.split(':').map(Number);
+  const minutesDebut = hDebut * 60 + mDebut;
+  const minutesFin = hFin * 60 + mFin;
+  const diffMinutes = minutesFin - minutesDebut;
+  const heures = Math.floor(diffMinutes / 60);
+  const minutes = diffMinutes % 60;
+  
+  if (heures > 0 && minutes > 0) {
+    return heures + 'H' + minutes;
+  } else if (heures > 0) {
+    return heures + 'H';
+  } else {
+    return minutes + 'min';
+  }
+}
+
 function genererPDFFinal() {
   if (!currentSession || !currentSession.signatureApprenant) {
     alert('Erreur : signature stagiaire manquante');
@@ -443,26 +461,7 @@ function genererPDFFinal() {
   y += 4;
   doc.text('Horaire : ' + currentSession.heureDebut + ' - ' + currentSession.heureFin, 25, y);
   y += 4;
-  
-  let duree = 'Erreur durée';
-  try {
-    const debut = currentSession.heureDebut.split(':');
-    const fin = currentSession.heureFin.split(':');
-    const minutesDebut = parseInt(debut[0]) * 60 + parseInt(debut[1]);
-    const minutesFin = parseInt(fin[0]) * 60 + parseInt(fin[1]);
-    const diffMinutes = minutesFin - minutesDebut;
-    const heures = Math.floor(diffMinutes / 60);
-    const minutes = diffMinutes % 60;
-    if (heures > 0 && minutes > 0) {
-      duree = heures + 'H' + minutes;
-    } else if (heures > 0) {
-      duree = heures + 'H';
-    } else {
-      duree = minutes + 'min';
-    }
-  } catch(e) {
-    duree = '??';
-  }
+  const duree = calculerDuree(currentSession.heureDebut, currentSession.heureFin);
   doc.text('Duree : ' + duree, 25, y);
   
   y += 12;
@@ -545,3 +544,10 @@ function reinitialiser() {
 
 </body>
 </html>
+```
+
+**Copie ce code et teste !** 🚀
+
+✅ Pas de logo image (trop compliqué)
+✅ **"FORMADIRECT" en bleu** au lieu du logo
+✅ Intitulé formation qui rentre COMPLÈTEMENT grâce à `splitTextToSize`
